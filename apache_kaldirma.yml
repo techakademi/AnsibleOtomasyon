@@ -1,15 +1,20 @@
 ---
-
   - hosts: all
     become: true
     tasks:
 
-    - name: Bu gorev, apache2 yuklememesini gerceklestirir.
+    - name: Bu görev Ubuntu'dan apache ve kütüphane yüklemesini kaldırıyor.
       apt:
-        name: apache2
+        name:
+          - apache2
+          - libapache2-mod-php
         state: absent
+      when: ansible_distribution == "Ubuntu"
 
-    - name: Bu gorev, apache icin php kutuphanesini yuklememesini gerceklestirir.
-      apt:
-        name: libapache2-mod-php
+    - name: Bu görev Rocky'den apache ve kütüphane yüklemesini kaldırıyor.
+      dnf:
+        name:
+          - httpd
+          - php
         state: absent
+      when: ansible_distribution == "Rocky"

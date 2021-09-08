@@ -1,0 +1,41 @@
+---
+
+  - hosts: all
+    become: true
+    tasks:
+
+# Bu görev, Sunucu güncellemeleri için hazırlanmıştır..
+    - name: Bu gorev, Ubuntu Linux Update & Upgrade işlemlerini gerçekleştirir
+      ansible.builtin.package:
+          upgrade: dist
+          update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Bu gorev, Rocky Linux Update & Upgrade işlemlerini gerçekleştirir.
+      ansible.builtin.package:
+          update_only: yes
+          update_cache: yes
+      when: ansible_distribution == "Rocky"
+
+# Bu gorev, Ubuntu & Rocky Linux için Apache & Php kutuphane yüklemesinini gerçekleştirir.
+  - hosts: web_sunuculari
+    become: true
+    tasks:
+
+      - name: İşletim sistemlerini tespit et.
+        debug: var=ansible_os_family
+      
+      - name: Dosyalardan Değişkenleri oku.
+        include_vars: "{{ lookup('first_found', params) }}"
+        vars: 
+          params:
+            files:
+              - "vars/apache_{{ ansible_os_family }}.yml"
+              - "vars/apache_varsayilan.yml"
+
+      - name: Bu gorev, Ubuntu Apache & Php Kutuphane yuklemsi ile birlikte packet index'ini günceller.
+        ansible.builtin.package:
+            name:
+              - "{{ apache_sunucusu }}"
+              - "{{ php_kutuphane }}"
+            state: latest

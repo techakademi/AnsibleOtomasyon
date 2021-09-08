@@ -1,0 +1,5 @@
+---
+apache_sunucusu: apache2
+php_kutuphane: libapache2-mod-php
+db_sunucusu: mariadb-server
+ftp_sunucusu: vsftpd
