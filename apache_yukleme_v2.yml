@@ -1,0 +1,14 @@
+---
+
+  - hosts: all
+    become: true
+    tasks:
+
+# Bu görevler, Debian & Ubuntu tabanlı sunucular içndir.
+    - name: Bu gorev, Ubuntu Apache & Php Kutuphane yuklemsi ile birlikte packet index'ini günceller.
+      ansible.builtin.package:
+        name:
+          - "{{ apache_sunucusu }}"
+          - "{{ php_kutuphane }}"
+        state: latest
+        update_cache: yes

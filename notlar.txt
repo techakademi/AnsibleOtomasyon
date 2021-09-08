@@ -1,0 +1,8 @@
+1. Ubuntu
+2. Rocky Linux
+
+Ubuntu: 
+apache_sunucusu=apache2 php_kutuphane=libapache2-mod-php
+
+Rocky:
+apache_sunucusu=httpd php_kutuphane=php
