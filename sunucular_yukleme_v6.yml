@@ -121,7 +121,7 @@
             state: latest
         tags: veritabani_sunucusu
 
-# Bu gorev, Ubuntu Sunucusuna Mariadb yüklemesinini gerçekleştirir.
+# Bu gorev, Ubuntu Sunucusuna vsftpd yüklemesinini gerçekleştirir.
   - hosts: ftp_sunucusu
     become: true
     tasks:
