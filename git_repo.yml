@@ -1,0 +1,22 @@
+- hosts: Ansible_Controller
+  connection: local
+  vars: 
+    - repo: 'https://github.com/techakademi/Yenisite.git'
+    - hedefklasor: /home/theadmin/Prod_Proje
+  become: yes
+    
+  tasks:
+  
+    - name: Bu görev, GitRepo'dan projenin kaynak kodlarını indirme işlemini gerçekleştirir.
+      git:
+        repo: "{{ repo }}"
+        dest: "{{ hedefklasor }}"
+    
+
+    - name: Bu görev, GitRepo'dan indirilen proje belgelerini kontrol işlemini gerçekleştirir.
+      find:
+        paths: "{{ hedefklasor }}"      
+      register: liste
+
+    - debug:
+        var: liste

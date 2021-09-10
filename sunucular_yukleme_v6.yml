@@ -1,0 +1,147 @@
+---
+
+  - hosts: all
+    #tags: always
+    tags: never
+    become: true
+    tasks:
+
+# Bu görev, Sunucu güncellemeleri için hazırlanmıştır..
+    - name: Bu gorev, Ubuntu Linux Update & Upgrade işlemlerini gerçekleştirir
+      ansible.builtin.package:
+          upgrade: dist
+          update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Bu gorev, Rocky Linux Update & Upgrade işlemlerini gerçekleştirir.
+      ansible.builtin.package:
+          update_only: yes
+          update_cache: yes
+      when: ansible_distribution == "Rocky"
+
+# Bu gorev, Ubuntu & Rocky Linux için Apache & Php kutuphane yüklemesinini gerçekleştirir.
+  - hosts: web_sunuculari
+    become: true
+    tasks:
+
+      - name: İşletim sistemlerini tespit et.
+        debug: var=ansible_os_family
+        tags: web_sunuculari
+      
+      - name: Dosyalardan Değişkenleri oku.
+        include_vars: "{{ lookup('first_found', params) }}"
+        vars: 
+          params:
+            files:
+              - "vars/apache_{{ ansible_os_family }}.yml"
+              - "vars/apache_varsayilan.yml"
+        tags: web_sunuculari
+
+      - name: Bu gorev, Ubuntu Apache & Php Kutuphane yuklemsi ile birlikte packet index'ini günceller.
+        ansible.builtin.package:
+            name:
+              - "{{ apache_sunucusu }}"
+              - "{{ php_kutuphane }}"
+            state: latest
+        tags: web_sunuculari
+      
+      - name: Bu gorev, Rocky Linux Apache servisini çalıştırır.
+        service:
+          name: "{{ webservis }}"
+          state: started
+          enabled: yes
+        when: ansible_distribution == "Rocky"
+        tags: web_sunuculari
+
+      - name: Bu gorev, Rocky Linux'un Http portunu açar.
+        firewalld:
+          port: 80/tcp
+          permanent: yes
+          state: enabled
+        when: ansible_distribution == "Rocky"
+        register: rockyfrwll
+        tags: web_sunuculari
+      
+      - name: Bu gorev, Rocky Linux'ın Firewall servisini restart eder.
+        systemd:
+          name: firewalld
+          state: reloaded
+        when: ansible_distribution == "Rocky" and rockyfrwll.changed
+        tags: web_sunuculari
+
+      - name: Bu gorev, Web sunuculuarına, Config belgelerini kopyalama işlemini gerçekleştirir.
+        copy:
+          src: "{{ yerelconf }}"
+          dest: "{{ hedefconf }}"
+          owner: root
+          group: root
+          mode: 0644
+        register: conf
+        tags: web_sunuculari
+      
+      - name: Bu gorev, Web sunucularının Apache servislerini restart eder.
+        service:
+          name: "{{ webservis }}"
+          state: restarted
+        when: conf.changed
+        tags: web_sunuculari
+
+      - name: Bu gorev, Web sunuculuarına, varsayılan html sayfasını kopyalama işlemini gerçekleştirir.
+        copy:
+          src: "{{ projeklasor }}"
+          dest: "{{ hedefklasor }}"
+          owner: root
+          group: root
+          mode: 0644
+        tags: web_sunuculari
+
+        
+# Bu gorev, Ubuntu Sunucusuna Mariadb yüklemesinini gerçekleştirir.
+  - hosts: veritabani_sunucusu
+    become: true
+    tasks:
+
+      - name: İşletim sistemlerini tespit et.
+        debug: var=ansible_os_family
+        tags: veritabani_sunucusu
+      
+      - name: Dosyalardan Değişkenleri oku.
+        include_vars: "{{ lookup('first_found', params) }}"
+        vars: 
+          params:
+            files:
+              - "vars/apache_{{ ansible_os_family }}.yml"
+              - "vars/apache_varsayilan.yml"
+        tags: veritabani_sunucusu
+
+      - name: Bu gorev, Ubuntu Suncusuna Mariadb Yüklemesini gerçekleştirir.
+        ansible.builtin.package:
+            name:
+              - "{{ db_sunucusu }}"
+            state: latest
+        tags: veritabani_sunucusu
+
+# Bu gorev, Ubuntu Sunucusuna Mariadb yüklemesinini gerçekleştirir.
+  - hosts: ftp_sunucusu
+    become: true
+    tasks:
+
+      - name: İşletim sistemlerini tespit et.
+        debug: var=ansible_os_family
+        tags: ftp_sunucusu
+      
+      - name: Dosyalardan Değişkenleri oku.
+        include_vars: "{{ lookup('first_found', params) }}"
+        vars: 
+          params:
+            files:
+              - "vars/apache_{{ ansible_os_family }}.yml"
+              - "vars/apache_varsayilan.yml"
+        tags: ftp_sunucusu
+
+      - name: Bu gorev, Ubuntu Suncusuna FTP Yüklemesini gerçekleştirir.
+        ansible.builtin.package:
+            name:
+              - "{{ ftp_sunucusu }}"
+            state: latest
+        tags: ftp_sunucusu

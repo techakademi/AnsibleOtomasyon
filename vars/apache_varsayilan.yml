@@ -3,3 +3,8 @@ apache_sunucusu: apache2
 php_kutuphane: libapache2-mod-php
 db_sunucusu: mariadb-server
 ftp_sunucusu: vsftpd
+projeklasor: /home/theadmin/Prod_Proje/
+hedefklasor: /var/www/html/
+yerelconf: /home/theadmin/AnsibleOtomasyon/confbelgeler/dir.conf
+hedefconf: /etc/apache2/mods-enabled/dir.conf
+webservis: apache2

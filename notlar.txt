@@ -6,7 +6,8 @@ apache_sunucusu=apache2
 php_kutuphane=libapache2-mod-php
 db_sunucusu=mariadb-server
 ftp_sunucusu=vsftp
+apache2
 
 Rocky:
 apache_sunucusu=httpd php_kutuphane=php
-
+htppd

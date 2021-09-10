@@ -1,3 +1,8 @@
 ---
 apache_sunucusu: httpd
 php_kutuphane: php
+projeklasor: /home/theadmin/Prod_Proje/
+hedefklasor: /var/www/html/
+yerelconf: /home/theadmin/AnsibleOtomasyon/confbelgeler/httpd.conf
+hedefconf: /etc/httpd/conf/httpd.conf
+webservis: httpd
