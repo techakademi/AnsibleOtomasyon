@@ -1,4 +1,5 @@
 # Ansible ile Otomasyon Eğitimi
+Ansible ile otomasyon, eğitim konu başlıkları aşağıda ki gibidir:
 
 * **Ansible Nedir?**
 
@@ -25,5 +26,5 @@
 * **Ansible Playbook**
 <br />
 
-### Eğitim Video'larına Youtube adresimden erişebilirsiniz.
-https://www.youtube.com/c/HamzaGÜRCAN
+#### Bu konu başlıklarını içeren eğitim video'larına Youtube adresimden erişebilirsiniz.
+[Ansible ile Ototmasyon](https://www.youtube.com/watch?v=Rf9YjHPhNp0&list=PLp2nIigfaaYvRfteBeqFYBqGzQd9QdRng)
