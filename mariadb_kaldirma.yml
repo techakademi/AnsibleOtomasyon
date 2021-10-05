@@ -1,0 +1,42 @@
+---
+  - hosts: veritabani_sunucusu
+    become: true
+    tasks:
+
+    - name: Bu gorev, Ubuntu Suncusuna Mariadb Yüklemesini gerçekleştirir.
+      apt:
+        pkg:
+          - mariadb-*
+          - mariadb-client-10.3
+          - mariadb-common
+          - mariadb-server-10.3
+        state: absent
+
+
+    - name: Bu gorev, Ubuntu Suncusuna Mariadb Yüklemesini Kaldırır.
+      shell: 
+        cmd: | 
+          apt-get -y purge mariadb-*
+          apt-get -y purge mariadb-server*
+
+
+    - name: Bu gorev, Ubuntu Suncusuna Mariadb Yüklemesini Kaldırır.
+      shell:
+        cmd: dpkg -l | grep mariadb
+      register: Kontrol
+
+    - name: Goster.
+      debug:
+        msg: "{{ Kontrol }}"
+
+    # - name: Bu gorev, Ubuntu Suncusuna Mariadb Yüklemesini Kaldırır.
+    #   apt:
+    #     pkg: mariadb-server
+    #     state: absent
+    
+    # - name: Sunucuyu Reboot et.
+    #   reboot:
+    #     msg: "Ansible tarafından Sunucu Reboot edilmekte"
+    #     pre_reboot_delay: 5
+    #     post_reboot_delay: 10
+    #     test_command: "whoami"

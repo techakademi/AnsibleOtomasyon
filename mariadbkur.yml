@@ -1,0 +1,91 @@
+---
+  - hosts: veritabani_sunucusu    
+    become: yes
+    vars:
+      - mysql_root_password: "Password1"
+      - mysql_deneme_password: "Deneme1"
+    tasks:
+  
+    - name: Bu gorev, Ubuntu Linux Update & Upgrade işlemlerini gerçekleştirir
+      apt:
+        upgrade: dist
+        update_cache: yes
+
+    - name: Make sure universe repository is enabled
+      apt_repository:
+       repo: deb http://archive.ubuntu.com/ubuntu focal main
+       state: present
+
+    - name: Bu gorev, Ubuntu Suncusuna Mariadb Sunucu Yüklemesini gerçekleştirir.
+      apt:
+        name:
+          - mariadb-server
+          - python3-mysqldb
+          - mariadb-client
+        state: latest
+    
+    - name: Bu gorev, Ubuntu Suncusuna Mariadb Client Yüklemesini gerçekleştirir.
+      apt:
+        name:
+          - mariadb-client
+        state: latest
+
+    - name: Bu gorev, Mariadb servisini restart eder.
+      service:
+         name: mariadb
+         enabled: true
+         state: started
+
+    - name: mysql_root_password
+      mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        host: localhost
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        check_implicit_admin: true
+        priv: "*.*:ALL,GRANT" 
+        
+        
+    
+    # - name: remove remote root
+    #   mysql_user:
+    #     check_implicit_admin: true
+    #     login_user: root
+    #     login_password: "{{ mysql_root_password }}"
+    #     user: root
+    #     host: localhost
+    #     state: absent
+    
+    - name: Create myapp database
+      mysql_db:
+        name: deneme
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        login_host: localhost
+        state: present
+
+    - name: Generate myapp\_rw password
+      shell: tr -d -c "a-zA-Z0-9" < /dev/urandom | head -c 10
+      register: mysql_myapp_rw_password
+
+    - name: Inform user of mysql root password
+      debug:
+        msg: "MariaDB root password was set to {{ mysql_myapp_rw_password }}"
+
+    - name: Create user for deneme db
+      mysql_user:
+        name: deneme
+        host: localhost
+        password: "{{ mysql_deneme_password }}"
+        priv: 'deneme.*:ALL,GRANT'
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        state: present
+        
+    # - name: Sunucuyu Reboot et.
+    #   reboot:
+    #     msg: "Ansible tarafından Sunucu Reboot edilmekte"
+    #     pre_reboot_delay: 5
+    #     post_reboot_delay: 10
+    #     test_command: "whoami"
